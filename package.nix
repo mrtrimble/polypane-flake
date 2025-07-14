@@ -1,4 +1,4 @@
-{ lib, fetchurl, appimageTools }:
+{ lib, fetchurl, appimageTools, pkgs }:
 
 let
   pname = "polypane";

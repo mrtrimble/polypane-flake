@@ -2,19 +2,51 @@
 
 A Nix flake for packaging Polypane browser.
 
+## Important Note
+
+Polypane has an unfree license. This flake is configured to allow unfree packages automatically. However, when using this flake in your system configurations, you may need to explicitly allow unfree packages:
+
+### For NixOS
+
+Add this to your `configuration.nix`:
+
+```nix
+nixpkgs.config.allowUnfree = true;
+```
+
+### For Home Manager
+
+Add this to your `home.nix`:
+
+```nix
+nixpkgs.config.allowUnfree = true;
+```
+
+### For nix commands
+
+Use the `--impure` flag and set the environment variable:
+
+```bash
+export NIXPKGS_ALLOW_UNFREE=1
+nix run github:yourusername/polypane-flake --impure
+```
+
 ## Usage
 
 ### Direct run
+
 ```bash
 nix run github:yourusername/polypane-flake
 ```
 
 ### Install to profile
+
 ```bash
 nix profile install github:yourusername/polypane-flake
 ```
 
 ### Use in NixOS configuration
+
 ```nix
 {
   inputs = {
@@ -39,6 +71,7 @@ nix profile install github:yourusername/polypane-flake
 ```
 
 ### Use in Home Manager
+
 ```nix
 {
   inputs = {

@@ -28,7 +28,7 @@ Use the `--impure` flag and set the environment variable:
 
 ```bash
 export NIXPKGS_ALLOW_UNFREE=1
-nix run github:yourusername/polypane-flake --impure
+nix run github:mrtrimble/polypane-flake --impure
 ```
 
 ## Usage
@@ -36,13 +36,13 @@ nix run github:yourusername/polypane-flake --impure
 ### Direct run
 
 ```bash
-nix run github:yourusername/polypane-flake
+nix run github:mrtrimble/polypane-flake
 ```
 
 ### Install to profile
 
 ```bash
-nix profile install github:yourusername/polypane-flake
+nix profile install github:mrtrimble/polypane-flake
 ```
 
 ### Use in NixOS configuration
@@ -51,7 +51,7 @@ nix profile install github:yourusername/polypane-flake
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    polypane.url = "github:yourusername/polypane-flake";
+    polypane.url = "github:mrtrimble/polypane-flake";
   };
 
   outputs = { self, nixpkgs, polypane }: {
@@ -77,7 +77,7 @@ nix profile install github:yourusername/polypane-flake
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
-    polypane.url = "github:yourusername/polypane-flake";
+    polypane.url = "github:mrtrimble/polypane-flake";
   };
 
   outputs = { nixpkgs, home-manager, polypane, ... }: {

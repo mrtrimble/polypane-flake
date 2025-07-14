@@ -1,0 +1,69 @@
+name: Check for Polypane Updates
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      
+      - name: Check latest release
+        id: release
+        run: |
+          # Install jq if not available
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          LATEST=$(curl -s https://api.github.com/repos/firstversionist/polypane/releases/latest | jq -r .tag_name)
+          CURRENT=$(cat current_version.txt 2>/dev/null || echo "none")
+          
+          echo "Latest version: $LATEST"
+          echo "Current version: $CURRENT"
+          
+          if [ "$LATEST" != "$CURRENT" ]; then
+            echo "new-version=$LATEST" >> $GITHUB_OUTPUT
+            echo "update-needed=true" >> $GITHUB_OUTPUT
+            echo "Update needed: $CURRENT -> $LATEST"
+          else
+            echo "No update needed"
+          fi
+      
+      - name: Update if needed
+        if: steps.release.outputs.update-needed == 'true'
+        run: |
+          echo "${{ steps.release.outputs.new-version }}" > current_version.txt
+          
+          # Remove 'v' prefix from version tag
+          VERSION=$(echo "${{ steps.release.outputs.new-version }}" | sed 's/^v//')
+          
+          # Update version in package.nix
+          sed -i "s/version = \"[^\"]*\";/version = \"$VERSION\";/" package.nix
+          
+          # Calculate new SHA256 hash
+          URL="https://github.com/firstversionist/polypane/releases/download/v$VERSION/polypane-$VERSION.AppImage"
+          NEW_HASH=$(nix-prefetch-url --type sha256 "$URL")
+          
+          # Update SHA256 in package.nix
+          sed -i "s/sha256 = \"[^\"]*\";/sha256 = \"$NEW_HASH\";/" package.nix
+          
+      - name: Test build
+        if: steps.release.outputs.update-needed == 'true'
+        run: |
+          # Test that the package builds successfully
+          nix-build -E 'with import <nixpkgs> {}; callPackage ./package.nix {}'
+          
+      - name: Commit changes
+        if: steps.release.outputs.update-needed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update to Polypane ${{ steps.release.outputs.new-version }}"
+          git push

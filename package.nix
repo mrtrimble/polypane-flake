@@ -21,6 +21,11 @@ in appimageTools.wrapType2 {
     install -m 444 -D ${appimageContents}/${pname}.desktop $out/share/applications/${pname}.desktop
     install -m 444 -D ${appimageContents}/${pname}.png \
       $out/share/icons/hicolor/512x512/apps/${pname}.png
+
+    # Fix the desktop file to point to the correct executable
+    substituteInPlace $out/share/applications/${pname}.desktop \
+      --replace-fail 'Exec=AppRun --no-sandbox %U' "Exec=$out/bin/${pname} --no-sandbox %U" \
+      --replace-fail 'Icon=polypane' "Icon=$out/share/icons/hicolor/512x512/apps/${pname}.png"
   '';
 
   meta = with lib; {

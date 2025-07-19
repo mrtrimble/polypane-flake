@@ -57,7 +57,7 @@ jobs:
         if: steps.release.outputs.update-needed == 'true'
         run: |
           # Test that the package builds successfully
-          nix-build -E 'with import <nixpkgs> {}; callPackage ./package.nix {}'
+          NIXPKGS_ALLOW_UNFREE=1 nix-build -E 'with import <nixpkgs> {}; callPackage ./package.nix {}'
           
       - name: Commit changes
         if: steps.release.outputs.update-needed == 'true'

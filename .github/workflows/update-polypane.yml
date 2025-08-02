@@ -1,4 +1,6 @@
 name: Check for Polypane Updates
+permissions:
+  contents: write
 on:
   schedule:
     - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC

@@ -62,10 +62,15 @@ jobs:
           NIXPKGS_ALLOW_UNFREE=1 nix-build -E 'with import <nixpkgs> {}; callPackage ./package.nix {}'
           
       - name: Commit changes
-        if: steps.release.outputs.update-needed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Update to Polypane ${{ steps.release.outputs.new-version }}"
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > last_checked.txt
+          git add last_checked.txt
+          if [ "${{ steps.release.outputs.update-needed }}" == "true" ]; then
+            git add current_version.txt package.nix
+            git commit -m "Update to Polypane ${{ steps.release.outputs.new-version }}"
+          else
+            git commit -m "chore: weekly check (no update)"
+          fi
           git push

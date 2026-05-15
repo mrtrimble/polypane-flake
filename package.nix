@@ -2,13 +2,13 @@
 
 let
   pname = "polypane";
-  version = "26.0.0";
+  version = "29.0.0";
 
   src = fetchurl {
     url =
       "https://github.com/firstversionist/${pname}/releases/download/v${version}/${pname}-${version}.AppImage";
     name = "${pname}-${version}.AppImage";
-    sha256 = "04kwxwhrwq8pvd0767ji56cabf83slhm5jyv7mc5bsw571myffiv";
+    sha256 = "0zlsvm6a69sxmz2vxsdb5k74xzajf4p7zwl32dzq2blxihnrnypg";
   };
 
   appimageContents = appimageTools.extractType2 { inherit pname src version; };
